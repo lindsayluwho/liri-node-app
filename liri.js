@@ -72,8 +72,8 @@ inquirer.prompt([{
 							});
 
         		//Grabs and displays the artist, song, preview link, and album of the specified song. Defaults to "The Sign" by Ace of Base.
-        		if (request){
-        			var songRequested = request.song;
+        		if (request.song == ''){
+        			var songRequested = "i saw the sign";
 							spotify.search({ type: 'track', query: songRequested, limit: 1 })
 							  .then(function(response) {
 							  	console.log(JSON.stringify(response.tracks.items, null, 2));
@@ -91,7 +91,7 @@ inquirer.prompt([{
 							  });
         		}
         		else{
-        			var songRequested = "i saw the sign";
+        			var songRequested = request.song;
         			spotify.search({ type: 'track', query: songRequested, limit: 1 })
 							  .then(function(response) {
 							  	console.log(JSON.stringify(response.tracks.items, null, 2));
@@ -115,11 +115,30 @@ inquirer.prompt([{
     };
 
     function movieThis() {
-        //inquirer prompt to ask for which movie user wants to look up
+	    //inquirer prompt to ask for which movie user wants to look up
+	    inquirer.prompt([
+	    	{
+	    		type: "input",
+	    		name: "movie",
+	    		message: "Which movie would you like to look up?"
+	    	}]).then(function(search){
+	    	//Displays movie, release year, IMDB rating, Rotten Tomatoes rating, country of production, language, plot, and actors. Defaults to "Mr. Nobody."
+	    	
+	    	//remove any punctuation from the request
+	    	var simpleMovie = search.movie;
+	    	if (search.movie == ''){
+	    		simpleMovie = "Mr. Nobody";
+	    	}
+	    	simpleMovie = simpleMovie.replace(/[^\w\s]|_/g, "")
+         .replace(/\s+/g, " ");
 
-        //Displays movie, release year, IMDB rating, Rotten Tomatoes rating, country of production, language, plot, and actors. Defaults to "Mr. Nobody."
 
-
+	    	request('http://www.omdbapi.com/?apikey=trilogy&t='+simpleMovie, function (error, response, body) {
+				  console.log('error:', error); // Print the error if one occurred
+				  console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+				  console.log('body:', JSON.parse(body));
+				});
+	  	});
     };
 
     function doWhatItSays() {
